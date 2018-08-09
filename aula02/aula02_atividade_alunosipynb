@@ -1,0 +1,1160 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "___\n",
+    "# Aula 02 - tipos de variáveis\n",
+    "___\n",
+    "\n",
+    "\n",
+    "**Preparo Prévio:**\n",
+    "1. Magalhães e Lima, Capítulo 1\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "___\n",
+    "\n",
+    "##  Renda per capita, CO2 de países, e países sem literal\n",
+    "\n",
+    "Foram coletados dois dados do site https://www.gapminder.org/:\n",
+    "1. Emissão de CO2 per capita\n",
+    "1. Renda per capita (sendo usado PBI como uma `proxy` de renda)\n",
+    "\n",
+    "Nesses *dataframes*, as linhas representam os países, as colunas representam o ano.\n",
+    "\n",
+    "No *dataframe* *co2* criado a seguir, o conteúdo de cada célula é a medida de CO2 de um determinado ano (coluna) para determinado país (linha). \n",
+    "\n",
+    "No *dataframe* *income* criado a seguir, o conteúdo de cada célula é a medida de PIB per capita de um determinado ano (coluna) para um determinado país (linha). \n",
+    "\n",
+    "Também usamos as colunas *landlocked* e *region* do primeiro encontro. Neste caso não há uma coluna ano a ano porque este atributo muda só quando mudam as fronteiras de um país.\n",
+    "\n",
+    "\n",
+    "Como os arquivos estão separados, será preciso juntá-los cruzando o país.\n",
+    "\n",
+    "___"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Leitura dos arquivos e mudanças de índices"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%matplotlib inline\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import math as math\n",
+    "from scipy import stats\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Leitura dos arquivos em Excel\n",
+    "co2 = pd.read_excel('indicator CDIAC carbon_dioxide_emissions_per_capita.xlsx')\n",
+    "income = pd.read_excel('indicator gapminder gdp_per_capita_ppp.xlsx')\n",
+    "landlocked = pd.read_excel('landlocked_region.xlsx')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### CO2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "É possível verificar que cada linha representa um país e as colunas representam o ano\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>CO2 per capita</th>\n",
+       "      <th>1751</th>\n",
+       "      <th>1755</th>\n",
+       "      <th>1762</th>\n",
+       "      <th>1763</th>\n",
+       "      <th>1764</th>\n",
+       "      <th>1765</th>\n",
+       "      <th>1766</th>\n",
+       "      <th>1767</th>\n",
+       "      <th>1768</th>\n",
+       "      <th>...</th>\n",
+       "      <th>2003</th>\n",
+       "      <th>2004</th>\n",
+       "      <th>2005</th>\n",
+       "      <th>2006</th>\n",
+       "      <th>2007</th>\n",
+       "      <th>2008</th>\n",
+       "      <th>2009</th>\n",
+       "      <th>2010</th>\n",
+       "      <th>2011</th>\n",
+       "      <th>2012</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Abkhazia</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Afghanistan</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.022704</td>\n",
+       "      <td>0.027472</td>\n",
+       "      <td>0.03678</td>\n",
+       "      <td>0.04709</td>\n",
+       "      <td>0.068312</td>\n",
+       "      <td>0.131602</td>\n",
+       "      <td>0.213325</td>\n",
+       "      <td>0.262174</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Akrotiri and Dhekelia</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>3 rows × 254 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "          CO2 per capita  1751  1755  1762  1763  1764  1765  1766  1767  \\\n",
+       "0               Abkhazia   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "1            Afghanistan   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "2  Akrotiri and Dhekelia   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "\n",
+       "   1768  ...       2003      2004     2005     2006      2007      2008  \\\n",
+       "0   NaN  ...        NaN       NaN      NaN      NaN       NaN       NaN   \n",
+       "1   NaN  ...   0.022704  0.027472  0.03678  0.04709  0.068312  0.131602   \n",
+       "2   NaN  ...        NaN       NaN      NaN      NaN       NaN       NaN   \n",
+       "\n",
+       "       2009      2010  2011  2012  \n",
+       "0       NaN       NaN   NaN   NaN  \n",
+       "1  0.213325  0.262174   NaN   NaN  \n",
+       "2       NaN       NaN   NaN   NaN  \n",
+       "\n",
+       "[3 rows x 254 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "co2.head(3)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Renda"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "O mesmo se aplica a renda.\n",
+    "\n",
+    "Lembrando que GDP significa *gross domestic product*, ou *produto interno bruto* "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>GDP per capita</th>\n",
+       "      <th>1800</th>\n",
+       "      <th>1801</th>\n",
+       "      <th>1802</th>\n",
+       "      <th>1803</th>\n",
+       "      <th>1804</th>\n",
+       "      <th>1805</th>\n",
+       "      <th>1806</th>\n",
+       "      <th>1807</th>\n",
+       "      <th>1808</th>\n",
+       "      <th>...</th>\n",
+       "      <th>2006</th>\n",
+       "      <th>2007</th>\n",
+       "      <th>2008</th>\n",
+       "      <th>2009</th>\n",
+       "      <th>2010</th>\n",
+       "      <th>2011</th>\n",
+       "      <th>2012</th>\n",
+       "      <th>2013</th>\n",
+       "      <th>2014</th>\n",
+       "      <th>2015</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Abkhazia</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Afghanistan</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>603.0</td>\n",
+       "      <td>...</td>\n",
+       "      <td>1173.0</td>\n",
+       "      <td>1298.0</td>\n",
+       "      <td>1311.0</td>\n",
+       "      <td>1548.0</td>\n",
+       "      <td>1637.0</td>\n",
+       "      <td>1695.0</td>\n",
+       "      <td>1893.0</td>\n",
+       "      <td>1884.0</td>\n",
+       "      <td>1877.0</td>\n",
+       "      <td>1925.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Akrotiri and Dhekelia</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>3 rows × 217 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "          GDP per capita   1800   1801   1802   1803   1804   1805   1806  \\\n",
+       "0               Abkhazia    NaN    NaN    NaN    NaN    NaN    NaN    NaN   \n",
+       "1            Afghanistan  603.0  603.0  603.0  603.0  603.0  603.0  603.0   \n",
+       "2  Akrotiri and Dhekelia    NaN    NaN    NaN    NaN    NaN    NaN    NaN   \n",
+       "\n",
+       "    1807   1808   ...      2006    2007    2008    2009    2010    2011  \\\n",
+       "0    NaN    NaN   ...       NaN     NaN     NaN     NaN     NaN     NaN   \n",
+       "1  603.0  603.0   ...    1173.0  1298.0  1311.0  1548.0  1637.0  1695.0   \n",
+       "2    NaN    NaN   ...       NaN     NaN     NaN     NaN     NaN     NaN   \n",
+       "\n",
+       "     2012    2013    2014    2015  \n",
+       "0     NaN     NaN     NaN     NaN  \n",
+       "1  1893.0  1884.0  1877.0  1925.0  \n",
+       "2     NaN     NaN     NaN     NaN  \n",
+       "\n",
+       "[3 rows x 217 columns]"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "income.head(3)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Landlocked e Region"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Lembrando das colunas *landlocked*, que indica se um país tem litoral ou não, e *region*, que  indica a que região pertence"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Country</th>\n",
+       "      <th>region</th>\n",
+       "      <th>landlocked</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Albania</td>\n",
+       "      <td>europe_east</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Algeria</td>\n",
+       "      <td>africa_north</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Angola</td>\n",
+       "      <td>africa_sub_saharan</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Antigua and Barbuda</td>\n",
+       "      <td>america_north</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Argentina</td>\n",
+       "      <td>america_south</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "               Country              region  landlocked\n",
+       "0              Albania         europe_east           0\n",
+       "1              Algeria        africa_north           0\n",
+       "2               Angola  africa_sub_saharan           0\n",
+       "3  Antigua and Barbuda       america_north           0\n",
+       "4            Argentina       america_south           0"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "landlocked.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "___\n",
+    "### Inner Join\n",
+    "\n",
+    "Vamos agora juntar as três tabelas, selecionar apenas o ano de 2010 e remover os NaNs.\n",
+    "\n",
+    "Ao final vamos fazer o gráfico de dispersão das duas variáveis.\n",
+    "\n",
+    "**Sugestão**: pesquise sobre a função DataFrame.join(), pode ser muito útil no futuro."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "mudando o índice do *co2*:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "co2_idx = co2.set_index('CO2 per capita')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Mudando o índice do *income*: \n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "inco_idx = income.set_index('GDP per capita')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Mudando o índice do *landlocked*:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "land_idx = landlocked.set_index('Country')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>1751</th>\n",
+       "      <th>1755</th>\n",
+       "      <th>1762</th>\n",
+       "      <th>1763</th>\n",
+       "      <th>1764</th>\n",
+       "      <th>1765</th>\n",
+       "      <th>1766</th>\n",
+       "      <th>1767</th>\n",
+       "      <th>1768</th>\n",
+       "      <th>1769</th>\n",
+       "      <th>...</th>\n",
+       "      <th>2006_income</th>\n",
+       "      <th>2007_income</th>\n",
+       "      <th>2008_income</th>\n",
+       "      <th>2009_income</th>\n",
+       "      <th>2010_income</th>\n",
+       "      <th>2011_income</th>\n",
+       "      <th>2012_income</th>\n",
+       "      <th>2013</th>\n",
+       "      <th>2014</th>\n",
+       "      <th>2015</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>Abkhazia</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Afghanistan</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>1173.0</td>\n",
+       "      <td>1298.0</td>\n",
+       "      <td>1311.0</td>\n",
+       "      <td>1548.0</td>\n",
+       "      <td>1637.0</td>\n",
+       "      <td>1695.0</td>\n",
+       "      <td>1893.0</td>\n",
+       "      <td>1884.0</td>\n",
+       "      <td>1877.0</td>\n",
+       "      <td>1925.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>2 rows × 469 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             1751  1755  1762  1763  1764  1765  1766  1767  1768  1769  \\\n",
+       "Abkhazia      NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "Afghanistan   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "\n",
+       "              ...    2006_income  2007_income  2008_income  2009_income  \\\n",
+       "Abkhazia      ...            NaN          NaN          NaN          NaN   \n",
+       "Afghanistan   ...         1173.0       1298.0       1311.0       1548.0   \n",
+       "\n",
+       "             2010_income  2011_income  2012_income    2013    2014    2015  \n",
+       "Abkhazia             NaN          NaN          NaN     NaN     NaN     NaN  \n",
+       "Afghanistan       1637.0       1695.0       1893.0  1884.0  1877.0  1925.0  \n",
+       "\n",
+       "[2 rows x 469 columns]"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = co2_idx.join(inco_idx, how='inner', lsuffix='_co2', rsuffix='_income')\n",
+    "df.head(2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Vamos juntar a terceira tabela:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data = df.join(land_idx, how=\"inner\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Por que no exemplo acima não foi necessário usar prefixos ou sufixos?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>1751</th>\n",
+       "      <th>1755</th>\n",
+       "      <th>1762</th>\n",
+       "      <th>1763</th>\n",
+       "      <th>1764</th>\n",
+       "      <th>1765</th>\n",
+       "      <th>1766</th>\n",
+       "      <th>1767</th>\n",
+       "      <th>1768</th>\n",
+       "      <th>1769</th>\n",
+       "      <th>...</th>\n",
+       "      <th>2008_income</th>\n",
+       "      <th>2009_income</th>\n",
+       "      <th>2010_income</th>\n",
+       "      <th>2011_income</th>\n",
+       "      <th>2012_income</th>\n",
+       "      <th>2013</th>\n",
+       "      <th>2014</th>\n",
+       "      <th>2015</th>\n",
+       "      <th>region</th>\n",
+       "      <th>landlocked</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>Albania</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>8644.0</td>\n",
+       "      <td>8994.0</td>\n",
+       "      <td>9374.0</td>\n",
+       "      <td>9640.0</td>\n",
+       "      <td>9811.0</td>\n",
+       "      <td>9961.0</td>\n",
+       "      <td>10160.0</td>\n",
+       "      <td>10620.0</td>\n",
+       "      <td>europe_east</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Algeria</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>...</td>\n",
+       "      <td>12314.0</td>\n",
+       "      <td>12285.0</td>\n",
+       "      <td>12494.0</td>\n",
+       "      <td>12606.0</td>\n",
+       "      <td>12779.0</td>\n",
+       "      <td>12893.0</td>\n",
+       "      <td>13179.0</td>\n",
+       "      <td>13434.0</td>\n",
+       "      <td>africa_north</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>2 rows × 471 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         1751  1755  1762  1763  1764  1765  1766  1767  1768  1769  \\\n",
+       "Albania   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "Algeria   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   \n",
+       "\n",
+       "            ...      2008_income  2009_income  2010_income  2011_income  \\\n",
+       "Albania     ...           8644.0       8994.0       9374.0       9640.0   \n",
+       "Algeria     ...          12314.0      12285.0      12494.0      12606.0   \n",
+       "\n",
+       "         2012_income     2013     2014     2015        region  landlocked  \n",
+       "Albania       9811.0   9961.0  10160.0  10620.0   europe_east           0  \n",
+       "Algeria      12779.0  12893.0  13179.0  13434.0  africa_north           0  \n",
+       "\n",
+       "[2 rows x 471 columns]"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data.head(2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Explorando os índices"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Indexação: vamos ver como descobrir se a Argentina é landlocked"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data.loc[\"Argentina\", \"landlocked\"]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data[\"landlocked\"][\"Argentina\"] ## ?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "\n",
+    "#### Atividade 1 \n",
+    "\n",
+    "Veja no tutorial como fazer uma seleção só com os países da América do Norte\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####  Atividade 2\n",
+    "\n",
+    "Qual o valor de *2010_income* que separa os $75\\%$ mais ricos?  Monte um DataFrame separado só com os $80\\%$ mais ricos segundo a coluna *2010_income*?  \n",
+    "\n",
+    "Dica: Veja as funções [quantile](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.quantile.html) e [percentile](https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.percentile.html)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Atividade 3"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Use um recurso apropriado para visualizar a coluna 'GDPcapita'. Justifique"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Atividade 4 - GDPCapitaOrdinal"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Particione a coluna GPCapita em 10 seções. Guarde a coluna de volta no DataFrame como GDPCapitaOrdinal\n",
+    "\n",
+    "Dica: use `pd.cut()`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Atividade 4.1\n",
+    "\n",
+    " Apresente a tabela de frequência da GDPCapitaOrdinal"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Atividade 5\n",
+    "\n",
+    "\n",
+    "#### 5.1 \n",
+    "Você foi encarregado de responder se a  seguinte afirmação é verdadeira ou falsa: a taxa de fertilidade é maior em regiões menos desenvolvidas do mundo.\n",
+    "\n",
+    "Responda visualizando GDPCapita (versão quantitativa) versus taxa de fertilidade. Lembre-se do diagrama de dispersão visto na aula passada.\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### 5.2\n",
+    "\n",
+    "Adote um outro enfoque: cruze o GDP per capita em sua versão categória por regiões.\n",
+    "\n",
+    "Para visualizar melhor é mais útil ver a versão absoluta ou relativa? \n",
+    "\n",
+    "É mais útil que a tabela toda some 100%, ou somar 100% por região? *como se faz isso?*\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Atividade 6 - análise livre\n",
+    "\n",
+    "Vá ao site [gapminder.org](http://www.gapminder.org) e escolha uma variável quantitativa\n",
+    "\n",
+    "Visualize esta variável usando histograma *e* boxplot.\n",
+    "\n",
+    "Classifique o comportamento desta variável em relação a assimetrias e apresente as principais medidas-resumo: média, mediana e desvio padrão\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.axes._subplots.AxesSubplot at 0x115d24860>"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAY0AAAD9CAYAAABA8iukAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAFsRJREFUeJzt3X+MXeWd3/H3t4MdCBt+hQmitoOpYu2OM7tRyBTcjVvVsAFDVmtXJRubanGT0VrNkmnSHypm5w/aJJaItloKJkFisYuJYAxiE7ASWMeCyaZTBcIQErBxUk9xiKfQMKmJlyVx/CPf/nEfOxd77Dlzr6/vzPj9kq7mnO95zrnPjYQ/Oc9zfkRmIklSFf+g3R2QJE0fhoYkqTJDQ5JUmaEhSarM0JAkVWZoSJIqMzQkSZUZGpKkygwNSVJlZ7S7AyfbhRdemPPnz293NyRpWnnuued+lpmdE7WbcaExf/58hoeH290NSZpWIuKVKu0cnpIkVWZoSJIqMzQkSZUZGpKkygwNSVJlhobUYgMDA3R3d9PR0UF3dzcDAwPt7pLUsBl3ya00lQwMDNDf38/69etZvHgxQ0ND9Pb2ArBy5co2906avJhpr3vt6elJ79PQVNHd3c26detYsmTJkdrg4CB9fX1s27atjT2T3i4insvMngnbGRpS63R0dLBv3z5mzZp1pHbgwAHOPPNMDh061MaeSW9XNTSc05BaqKuri6GhobfVhoaG6OrqalOPpOYYGlIL9ff309vby+DgIAcOHGBwcJDe3l76+/vb3TWpIU6ESy10eLK7r6+PHTt20NXVxdq1a50E17TlnIYkyTkNSdLJZ2hIkiqbMDQiYkNEvB4R2+pqfxERP4yIFyLiaxFxXt22WyJiJCJ+FBHX1NWXltpIRKypq18aEc9ExM6IeCgiZpf6O8r6SNk+/2T9aElSY6qcadwHLD2qthXozszfA/4XcAtARCwEVgDvL/t8OSI6IqID+BJwLbAQWFnaAnwRuD0zFwBvAL2l3gu8kZnvA24v7SRJbTRhaGTmt4E9R9W+mZkHy+rTwNyyvAzYlJm/ysxdwAhwefmMZObLmbkf2AQsi4gArgQeKftvBJbXHWtjWX4EuKq0lyS1ycmY0/gk8ERZngPsrts2WmrHq78b+HldAB2uv+1YZfve0v4YEbE6IoYjYnhsbKzpHyRJGl9ToRER/cBB4IHDpXGaZQP1Ex3r2GLmPZnZk5k9nZ0TvhddktSghm/ui4hVwB8CV+VvbvYYBebVNZsLvFqWx6v/DDgvIs4oZxP17Q8fazQizgDO5ahhMknSqdXQmUZELAVuBv4oM39Rt2kzsKJc+XQpsAD4LvAssKBcKTWb2mT55hI2g8D1Zf9VwGN1x1pVlq8HnsqZdieiJE0zE55pRMQA8M+BCyNiFLiV2tVS7wC2lrnppzPz32Tm9oh4GHiJ2rDVTZl5qBzn08AWoAPYkJnby1fcDGyKiC8AzwPrS3098JWIGKF2hrHiJPxeSVITfIyIJMnHiEiSTj5DQ5JUmaEhSarM0JAkVWZoSJIqMzQkSZUZGpKkygwNSVJlhoYkqTJDQ5JUmaEhSarM0JAkVWZoSJIqMzQkSZUZGpKkygwNSVJlhoYkqTJDQ5JUmaEhSarM0JAkVWZoSJIqMzQkSZVNGBoRsSEiXo+IbXW1CyJia0TsLH/PL/WIiDsjYiQiXoiIy+r2WVXa74yIVXX1D0XEi2WfOyMiTvQdkqT2qXKmcR+w9KjaGuDJzFwAPFnWAa4FFpTPauBuqAUAcCtwBXA5cGtdCNxd2h7eb+kE3yFJapMJQyMzvw3sOaq8DNhYljcCy+vq92fN08B5EXExcA2wNTP3ZOYbwFZgadl2TmZ+JzMTuP+oY433HZKkNml0TuOizHwNoPx9T6nPAXbXtRsttRPVR8epn+g7JEltcrInwmOcWjZQn9yXRqyOiOGIGB4bG5vs7pKkihoNjZ+WoSXK39dLfRSYV9duLvDqBPW549RP9B3HyMx7MrMnM3s6Ozsb/EmSpIk0GhqbgcNXQK0CHqur31iuoloE7C1DS1uAqyPi/DIBfjWwpWx7MyIWlaumbjzqWON9hySpTapccjsAfAf47YgYjYhe4DbgIxGxE/hIWQd4HHgZGAH+CvgzgMzcA3weeLZ8PldqAJ8C7i37/G/giVI/3ndI08rAwADd3d10dHTQ3d3NwMBAu7skNeyMiRpk5srjbLpqnLYJ3HSc42wANoxTHwa6x6n/v/G+Q5pOBgYG6O/vZ/369SxevJihoSF6e3sBWLnyeP9pSVNX1P6dnzl6enpyeHi43d2QAOju7mb58uU8+uij7Nixg66uriPr27Ztm/gA0ikSEc9lZs9E7SY805DUuJdeeom33nqLDRs2HDnT+OQnP8krr7zS7q5JDfHZU1ILzZ49m76+PpYsWcKsWbNYsmQJfX19zJ49u91dkxpiaEgttH//fu666y4GBwc5cOAAg4OD3HXXXezfv7/dXZMa4vCU1EILFy5k+fLl9PX1HZnTuOGGG3j00Ufb3TWpIZ5pSC3U39/Pgw8+yLp169i3bx/r1q3jwQcfpL+/v91dkxrimYbUQocvq60/01i7dq2X22ra8pJbSVLlS24dnpIkVWZoSJIqMzQkSZUZGpKkygwNSVJlhoYkqTJDQ5JUmaEhSarM0JAkVWZoSJIqMzSkFvMd4ZpJfGCh1EK+I1wzjQ8slFqou7ubdevWsWTJkiO1wcFB+vr6fEe4ppSqDyw0NKQW6ujoYN++fcyaNetI7cCBA5x55pkcOnSojT2T3u6UPOU2Iv5dRGyPiG0RMRARZ0bEpRHxTETsjIiHImJ2afuOsj5Sts+vO84tpf6jiLimrr601EYiYk0zfZXaoauri6GhobfVhoaG6OrqalOPpOY0HBoRMQf4t0BPZnYDHcAK4IvA7Zm5AHgD6C279AJvZOb7gNtLOyJiYdnv/cBS4MsR0RERHcCXgGuBhcDK0laaNvr7++nt7X3bO8J7e3t9c5+mrWYnws8AzoqIA8A7gdeAK4EbyvaNwH8G7gaWlWWAR4C7IiJKfVNm/grYFREjwOWl3UhmvgwQEZtK25ea7LN0yvjmPs00DYdGZv6fiPivwE+AXwLfBJ4Dfp6ZB0uzUWBOWZ4D7C77HoyIvcC7S/3pukPX77P7qPoVjfZXapeVK1caEpoxmhmeOp/a//O/FPiHwNnUhpKOdnimPY6zbbL18fqyOiKGI2J4bGxsoq5LkhrUzET4HwC7MnMsMw8AXwV+HzgvIg6fwcwFXi3Lo8A8gLL9XGBPff2ofY5XP0Zm3pOZPZnZ09nZ2cRPkiSdSDOh8RNgUUS8s8xNXEVtvmEQuL60WQU8VpY3l3XK9qeydr3vZmBFubrqUmAB8F3gWWBBuRprNrXJ8s1N9FeS1KRm5jSeiYhHgO8BB4HngXuAbwCbIuILpba+7LIe+EqZ6N5DLQTIzO0R8TC1wDkI3JSZhwAi4tPAFmpXZm3IzO2N9leS1Dxv7pMknZqb+yRNzAcWaibxgYVSC/nAQs00Dk9JLeQDCzVd+MBCaQrwgYWaLpzTkKYAH1iomcbQkFrIBxZqpnEiXGohH1iomcY5DUmScxqSpJPP0JAkVWZoSC3mHeGaSZwIl1rIO8I10zgRLrWQd4RruvCOcGkK8I5wTRdePSVNAd4RrpnGOQ2phfr7+/n4xz/O2WefzSuvvMIll1zCW2+9xR133NHurkkN8UxDOkVqb0WWpjdDQ2qhtWvX8tBDD7Fr1y4OHTrErl27eOihh1i7dm27uyY1xIlwqYWcCNd04US4NAU4Ea6ZxtCQWshHo2um8eopqYV8NLpmGuc0JEmnZk4jIs6LiEci4ocRsSMi/klEXBARWyNiZ/l7fmkbEXFnRIxExAsRcVndcVaV9jsjYlVd/UMR8WLZ587wmkVJaqtm5zTuAP4mM38H+ACwA1gDPJmZC4AnyzrAtcCC8lkN3A0QERcAtwJXAJcDtx4OmtJmdd1+S5vsrySpCQ2HRkScA/wzYD1AZu7PzJ8Dy4CNpdlGYHlZXgbcnzVPA+dFxMXANcDWzNyTmW8AW4GlZds5mfmdrI2h3V93LElSGzRzpvGPgDHgv0fE8xFxb0ScDVyUma8BlL/vKe3nALvr9h8ttRPVR8epS5LapJnQOAO4DLg7Mz8IvMVvhqLGM958RDZQP/bAEasjYjgihsfGxk7ca0lSw5oJjVFgNDOfKeuPUAuRn5ahJcrf1+vaz6vbfy7w6gT1uePUj5GZ92RmT2b2dHZ2NvGTJEkn0nBoZOb/BXZHxG+X0lXAS8Bm4PAVUKuAx8ryZuDGchXVImBvGb7aAlwdEeeXCfCrgS1l25sRsahcNXVj3bEkSW3Q7M19fcADETEbeBn4BLUgejgieoGfAB8rbR8HrgNGgF+UtmTmnoj4PPBsafe5zNxTlj8F3AecBTxRPpKkNvHmPkmSDyyUpoqBgQG6u7vp6Oigu7ubgYGBdndJapjPnpJaaGBggP7+ftavX8/ixYsZGhqit7cXwOdPaVpyeEpqoe7ubtatW8eSJUuO1AYHB+nr62Pbtm1t7Jn0dlWHpwwNqYV8CZOmC+c0pCnAlzBppjE0pBbyJUyaaZwIl1rIlzBppnFOQ5LknIYk6eRzeEpq0Kl6keRMGw3Q9OaZhtSgzJzU55Kbvz7pfQwMTTWGhiSpMkNDklSZoSFJqszQkCRVZmhIkiozNCRJlRkakqTKDA1JUmWGhiSpMkNDklSZoSFJqqzp0IiIjoh4PiK+XtYvjYhnImJnRDwUEbNL/R1lfaRsn193jFtK/UcRcU1dfWmpjUTEmmb7Kklqzsk40/gMsKNu/YvA7Zm5AHgD6C31XuCNzHwfcHtpR0QsBFYA7weWAl8uQdQBfAm4FlgIrCxtJUlt0lRoRMRc4KPAvWU9gCuBR0qTjcDysrysrFO2X1XaLwM2ZeavMnMXMAJcXj4jmflyZu4HNpW2kqQ2afZM478B/wn4dVl/N/DzzDxY1keBOWV5DrAboGzfW9ofqR+1z/HqkqQ2aTg0IuIPgdcz87n68jhNc4Jtk62P15fVETEcEcNjY2Mn6LUkqRnNnGl8GPijiPgxtaGjK6mdeZwXEYffCDgXeLUsjwLzAMr2c4E99fWj9jle/RiZeU9m9mRmT2dnZxM/SZJ0Ig2HRmbekplzM3M+tYnspzLzXwGDwPWl2SrgsbK8uaxTtj+VtdeSbQZWlKurLgUWAN8FngUWlKuxZpfv2NxofyVJzWvFO8JvBjZFxBeA54H1pb4e+EpEjFA7w1gBkJnbI+Jh4CXgIHBTZh4CiIhPA1uADmBDZm5vQX8lSRWdlNDIzG8B3yrLL1O78unoNvuAjx1n/7XA2nHqjwOPn4w+SpKa5x3hkqTKDA1JUmWGhiSpMkNDklSZoSFJqszQkCRVZmhIkiozNCRJlRkakqTKDA1JUmWGhiSpMkNDklSZoSFJqszQkCRVZmhIkiozNCRJlRkakqTKDA1JUmWGhiSpMkNDklSZoSFJquyMdndAmgo+8F++yd5fHmj598xf842WHv/cs2bxg1uvbul36PRmaEjA3l8e4Me3fbTd3Whaq0NJanh4KiLmRcRgROyIiO0R8ZlSvyAitkbEzvL3/FKPiLgzIkYi4oWIuKzuWKtK+50Rsaqu/qGIeLHsc2dERDM/VpLUnGbmNA4C/yEzu4BFwE0RsRBYAzyZmQuAJ8s6wLXAgvJZDdwNtZABbgWuAC4Hbj0cNKXN6rr9ljbRX0lSkxoOjcx8LTO/V5bfBHYAc4BlwMbSbCOwvCwvA+7PmqeB8yLiYuAaYGtm7snMN4CtwNKy7ZzM/E5mJnB/3bEkSW1wUq6eioj5wAeBZ4CLMvM1qAUL8J7SbA6wu2630VI7UX10nPp43786IoYjYnhsbKzZnyNJOo6mQyMifgv4a+Czmfl3J2o6Ti0bqB9bzLwnM3sys6ezs3OiLkuSGtRUaETELGqB8UBmfrWUf1qGlih/Xy/1UWBe3e5zgVcnqM8dpy5JapNmrp4KYD2wIzP/sm7TZuDwFVCrgMfq6jeWq6gWAXvL8NUW4OqIOL9MgF8NbCnb3oyIReW7bqw7liSpDZq5T+PDwJ8AL0bE90vtz4HbgIcjohf4CfCxsu1x4DpgBPgF8AmAzNwTEZ8Hni3tPpeZe8ryp4D7gLOAJ8pHktQmDYdGZg4x/rwDwFXjtE/gpuMcawOwYZz6MNDdaB8lSSeXz56SJFVmaEiSKjM0JEmVGRqSpMoMDUlSZYaGJKkyQ0OSVJmhIUmqzNCQJFVmaEiSKjM0JEmVNfPAQmnGeFfXGn5345qJG05x7+oC+Gi7u6EZzNCQgDd33MaPb5v+/9jOX/ONdndBM5zDU5KkygwNSVJlhoYkqTJDQ5JUmaEhSarM0JAkVWZoSJIqMzQkSZV5c59UzIQb4849a1a7u6AZbsqHRkQsBe4AOoB7M/O2NndJM9CpuBt8/ppvzIi7znV6m9LDUxHRAXwJuBZYCKyMiIXt7ZUknb6mdGgAlwMjmflyZu4HNgHL2twnSTptTfXhqTnA7rr1UeCKNvVFepuImPw+X5z892Tm5HeSWmSqh8Z4/1Ue819QRKwGVgO8973vbXWfJMB/zHV6murDU6PAvLr1ucCrRzfKzHsysyczezo7O09Z5yTpdDPVQ+NZYEFEXBoRs4EVwOY290mSTltTengqMw9GxKeBLdQuud2Qmdvb3C1JOm1N6dAAyMzHgcfb3Q9J0tQfnpIkTSGGhiSpMkNDklSZoSFJqixm2g1KETEGvNLufkjjuBD4Wbs7IR3HJZk54Y1uMy40pKkqIoYzs6fd/ZCa4fCUJKkyQ0OSVJmhIZ0697S7A1KznNOQJFXmmYYkqTJDQ5JUmaGh00ZEzIuIwYjYERHbI+IzpX5BRGyNiJ3l7/mlHhFxZ0SMRMQLEXFZqS+JiO/XffZFxPITfO+9vtteM4VzGjptRMTFwMWZ+b2IeBfwHLAc+NfAnsy8LSLWAOdn5s0RcR3QB1xH7TXDd2TmFUcd8wJgBJibmb84hT9HagvPNHTayMzXMvN7ZflNYAe199AvAzaWZhupBQmlfn/WPA2cV4Kn3vXAEycKjIj4VkT0lOW/j4i1EfGDiHg6Ii4q9Ysi4mul/oOI+P1S//cRsa18Pltq8yPih+UMZltEPBARfxAR/7OcLV1e2p0dERsi4tmIeD4iljX9P6JOe4aGTksRMR/4IPAMcFFmvga1YAHeU5rNAXbX7TZaavVWAAOT+Oqzgacz8wPAt4E/LfU7gb8t9cuA7RHxIeAT1M5yFgF/GhEfLO3fB9wB/B7wO8ANwGLgPwJ/Xtr0A09l5j8GlgB/ERFnT6Kv0jEMDZ12IuK3gL8GPpuZf3eipuPUjoznlrOO36X2Zsmq9gNfL8vPAfPL8pXA3QCZeSgz91ILga9l5luZ+ffAV4F/WtrvyswXM/PXwHbgyayNNb9Yd8yrgTUR8X3gW8CZwHsn0VfpGFP+zX3SyRQRs6gFxgOZ+dVS/mlEXJyZr5UgeL3UR4F5dbvPBV6tW/9jav+oH5hEFw7kbyYSD3Hi/wbHC63DflW3/Ou69V/XHTOAf5mZP5pE/6QT8kxDp42ICGA9sCMz/7Ju02ZgVVleBTxWV7+xXEW1CNh7eBirWMnkhqZO5EngU6WfHRFxDrXhq+UR8c4yrPQvgP8xiWNuAfrK76ZuaEtqmKGh08mHgT8Brqy7XPY64DbgIxGxE/hIWYfau+lfpnZ11F8Bf3b4QGVOZB7wtyepb58BlkTEi9SGrd5fJu3vA75Lbe7l3sx8fhLH/DwwC3ghIraVdakpXnIrSarMMw1JUmVOhEsnSUR8Dbj0qPLNmTmZq6ukKc3hKUlSZQ5PSZIqMzQkSZUZGpKkygwNSVJlhoYkqbL/D4z6XC2g9iYTAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "data.loc[:, \"2007_income\"].plot.box()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Atividade 7 - cruzamento de dados"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "A variável estudada na atividade anterior tem seu valor influenciado pela região ou pelo GDP per capita? Estude ambas as hipóteses"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.5.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
