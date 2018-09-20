@@ -1,0 +1,71 @@
+<h1 id="aula-14---combinação-de-variáveis-aleatórias">Aula 14 - Combinação de Variáveis Aleatórias</h1>
+<h2 id="combinações-de-variáveis-aleatórias">Combinações de variáveis aleatórias</h2>
+<p>Lembremos que:</p>
+<p>Se <span class="math inline"><em>f</em>(<em>x</em>)</span> for uma função de densidade de probabilidade contínua</p>
+<p><span class="math inline"><em>μ</em> = <em>E</em>(<em>X</em>)=∫<sub>−∞</sub><sup>∞</sup><em>x</em><em>f</em>(<em>x</em>)<em>d</em><em>x</em></span></p>
+<p>E que a variância:</p>
+<p><span class="math inline"><em>V</em>(<em>X</em>)=∫<sub>−∞</sub><sup>∞</sup>(<em>x</em> − <em>μ</em>)<sup>2</sup><em>f</em>(<em>x</em>)<em>d</em><em>x</em></span></p>
+<p>E que ainda vale a propriedade:</p>
+<p><span class="math inline"><em>V</em>(<em>X</em>)=<em>E</em>(<em>X</em><sup>2</sup>)−<em>E</em>(<em>X</em>)<sup>2</sup> = <em>E</em>(<em>X</em><sup>2</sup>)−<em>μ</em><sup>2</sup></span></p>
+<h2 id="propriedades-da-esperança">Propriedades da esperança</h2>
+<p>Lembremos da aula 08 que, para o valor esperado ou esperança, vale, se <span class="math inline"><em>c</em></span> e <span class="math inline"><em>d</em></span> forem constantes:</p>
+<p><span class="math inline"><em>E</em>(<em>X</em> + <em>d</em>)=<em>E</em>(<em>X</em>)+<em>d</em></span></p>
+<p><span class="math inline"><em>E</em>(<em>c</em><em>X</em>)=<em>c</em><em>E</em>(<em>X</em>)</span></p>
+<p>Combinando as expressões acima:</p>
+<p><span class="math inline"><em>E</em>(<em>c</em><em>X</em> + <em>d</em>)=<em>c</em><em>E</em>(<em>X</em>)+<em>d</em></span></p>
+<p>E para a variância vale:</p>
+<p><span class="math inline"><em>V</em>(<em>X</em> + <em>d</em>)=<em>V</em>(<em>X</em>)</span></p>
+<p><span class="math inline"><em>V</em>(<em>c</em><em>X</em>)=<em>c</em><sup>2</sup><em>V</em>(<em>X</em>)</span></p>
+<p><span class="math inline"><em>V</em>(<em>c</em><em>X</em> + <em>d</em>)=<em>c</em><sup>2</sup><em>V</em>(<em>X</em>)</span></p>
+<h2 id="propriedades-de-combinações-de-variáveis-aleatórias">Propriedades de combinações de variáveis aleatórias</h2>
+<h3 id="propriedades-da-esperança-1">Propriedades da esperança</h3>
+<p>Sejam <span class="math inline"><em>a</em></span> e <span class="math inline"><em>b</em></span> constantes e <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> variáveis aleatórias</p>
+<p><span class="math inline"><em>E</em>(<em>X</em> + <em>Y</em>)=<em>E</em>(<em>X</em>)+<em>E</em>(<em>Y</em>)</span></p>
+<p><span class="math inline"><em>E</em>(<em>a</em><em>X</em> + <em>b</em><em>Y</em>)=<em>a</em><em>E</em>(<em>X</em>)+<em>b</em><em>E</em>(<em>Y</em>)</span></p>
+<p>Estes resultados são sempre válidos, sejam <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> dependentes ou independentes</p>
+<h3 id="propriedades-da-variância">Propriedades da variância</h3>
+<p>Sejam <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> variáveis aleatórias</p>
+<p><span class="math inline"><em>V</em>(<em>X</em> + <em>Y</em>)=<em>V</em>(<em>X</em>)+<em>V</em>(<em>Y</em>)+2<em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)</span></p>
+<p><span class="math inline"><em>V</em>(<em>X</em> − <em>Y</em>)=<em>V</em>(<em>X</em>)+<em>V</em>(<em>Y</em>)−2<em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)</span></p>
+<p>Sendo que, como visto nas aulas de análise bidimensional, a covariância é definida como:</p>
+<p><span class="math inline"><em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)=<em>E</em>[(<em>X</em> − <em>μ</em><sub><em>X</em></sub>))(<em>Y</em> − <em>μ</em><sub><em>Y</em></sub>)] = <em>E</em>(<em>X</em><em>Y</em>)−<em>μ</em><sub><em>X</em></sub><em>μ</em><sub><em>Y</em></sub></span></p>
+<p>Dado que <span class="math inline"><em>μ</em><sub><em>X</em></sub> = <em>E</em>(<em>X</em>)</span> e <span class="math inline"><em>μ</em><sub><em>Y</em></sub> = <em>E</em>(<em>Y</em>)</span></p>
+<h3 id="variáveis-independentes">Variáveis independentes</h3>
+<p><span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> independentes <span class="math inline">⟹<em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)=0</span></p>
+<p>Entretanto:</p>
+<p><span class="math inline"><em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)=0</span> <span class="math inline">⇏</span> <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> independentes</p>
+<p>Se as variáveis <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> forem independentes:</p>
+<p><span class="math inline"><em>V</em>(<em>X</em> + <em>Y</em>)=<em>V</em>(<em>X</em>)+<em>V</em>(<em>Y</em>)</span></p>
+<p><span class="math inline"><em>V</em>(<em>X</em> − <em>Y</em>)=<em>V</em>(<em>X</em>)+<em>V</em>(<em>Y</em>)</span></p>
+<p><span class="math inline"><em>E</em>(<em>X</em>)<em>E</em>(<em>Y</em>)=<em>μ</em><sub><em>X</em></sub><em>μ</em><sub><em>Y</em></sub></span></p>
+<p><span class="math inline"><em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)=<em>E</em>(<em>X</em><em>Y</em>)−<em>μ</em><sub><em>X</em></sub><em>μ</em><sub><em>Y</em></sub></span></p>
+<h3 id="variância-com-coeficientes">Variância com coeficientes:</h3>
+<p>Sejam <span class="math inline"><em>a</em></span> e <span class="math inline"><em>b</em></span> constantes e <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> variáveis aleatórias:</p>
+<p><span class="math inline"><em>V</em>(<em>a</em><em>X</em> + <em>b</em><em>Y</em>)=<em>a</em><sup>2</sup><em>V</em>(<em>X</em>)+<em>b</em><sup>2</sup><em>V</em>(<em>X</em>)+2<em>a</em><em>b</em><em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)</span></p>
+<p><span class="math inline"><em>V</em>(<em>a</em><em>X</em> − <em>b</em><em>Y</em>)=<em>a</em><sup>2</sup><em>V</em>(<em>X</em>)+<em>b</em><sup>2</sup><em>V</em>(<em>X</em>)−2<em>a</em><em>b</em><em>C</em><em>o</em><em>v</em>(<em>X</em>, <em>Y</em>)</span></p>
+<p>Se as variáveis <span class="math inline"><em>X</em></span> e <span class="math inline"><em>Y</em></span> forem independentes:</p>
+<p><span class="math inline"><em>V</em>(<em>a</em><em>X</em> + <em>b</em><em>Y</em>)=<em>a</em><sup>2</sup><em>V</em>(<em>X</em>)+<em>b</em><sup>2</sup><em>V</em>(<em>Y</em>)</span></p>
+<p><span class="math inline"><em>V</em>(<em>a</em><em>X</em> − <em>b</em><em>Y</em>)=<em>a</em><sup>2</sup><em>V</em>(<em>X</em>)+<em>b</em><sup>2</sup><em>V</em>(<em>Y</em>)</span></p>
+<h3 id="exemplo---soma-de-v.a">Exemplo - soma de v.a</h3>
+<p>Um semicondutor tem 3 camadas. Supondo que as variâncias de espessura da primeira, segunda e terceira camada sejam 25, 40 e 30 <span class="math inline"><em>n</em><em>m</em><sup>2</sup></span>, respectivamente, e que as espessuras sejam independentes, qual é o desvio padrão da espessura do produto final?</p>
+<p>Sejam <span class="math inline"><em>X</em><sub>1</sub></span>, <span class="math inline"><em>X</em><sub>2</sub></span> e <span class="math inline"><em>X</em><sub>3</sub></span> as variáveis aleatórias que denotam as espessuras.</p>
+<p>Então:</p>
+<p><span class="math inline"><em>X</em> = <em>X</em><sub>1</sub> + <em>X</em><sub>2</sub> + <em>X</em><sub>3</sub></span></p>
+<p>Temos então que:</p>
+<p><span class="math inline"><em>V</em>(<em>X</em>)=<em>V</em>(<em>X</em><sub>1</sub>)+<em>V</em>(<em>X</em><sub>2</sub>)+<em>V</em>(<em>X</em><sub>3</sub>)=95<em>n</em><em>m</em><sup>2</sup></span></p>
+<p>Consequentemente, o desvio padrão do produto final é: <span class="math inline">9.747<em>n</em><em>m</em></span></p>
+<h3 id="exemplo">Exemplo</h3>
+<p>Um processo industrial pode ser executado em duas etapas independentes. O tempo gasto em cada etapa segue uma distribuição com média de 5 horas e desvio-padrão de 10 horas.</p>
+<p>Um engenheiro resolveu modificar o processo de produção fazendo com que seja executado numa única fase, cujo tempo de execução é o dobro da primeira etapa do processo atual.</p>
+<p>Vale a pena adotar o processo proposto pelo engenheiro?</p>
+<h3 id="média-e-variância-de-uma-média">Média e variância de uma média</h3>
+<p>Seja <span class="math inline">$\overline{X} = (X_1 + X_2 + \cdots + X_n)/n$</span>, com <span class="math inline"><em>E</em>(<em>X</em><sub><em>i</em></sub>)=<em>μ</em></span> para todo <span class="math inline"><em>i</em> = 1, 2, ⋯, <em>n</em></span></p>
+<p>Temos que <span class="math inline">$E(\overline{X}) = \mu$</span></p>
+<p>Se <span class="math inline"><em>X</em><sub>1</sub>, <em>X</em><sub>2</sub>, ⋯, <em>X</em><sub><em>n</em></sub></span> forem indepententes com <span class="math inline"><em>V</em>(<em>X</em><sub><em>i</em></sub>)=<em>σ</em><sup>2</sup></span> para todo <span class="math inline"><em>i</em> = 1, 2, ⋯, <em>n</em></span>, temos:</p>
+<p><span class="math inline">$V(\overline{X}) = \frac{\sigma^2}{n}$</span></p>
+<h2 id="propriedade-reprodutiva-da-normal">Propriedade reprodutiva da normal</h2>
+<p>Sejam <span class="math inline"><em>X</em><sub>1</sub>, <em>X</em><sub>2</sub>, ⋯, <em>X</em><sub><em>n</em></sub></span> variáveis aleatórias normais com <span class="math inline"><em>E</em>(<em>X</em><sub><em>i</em></sub>)=<em>μ</em><sub><em>i</em></sub></span> e <span class="math inline"><em>V</em>(<em>X</em><sub><em>i</em></sub>)=<em>σ</em><sub><em>i</em></sub><sup>2</sup></span>, para <span class="math inline"><em>i</em> = 1, 2, ⋯, <em>n</em></span></p>
+<p>Então:</p>
+<p><span class="math inline"><em>Y</em> = <em>c</em><sub>1</sub><em>X</em><sub>1</sub> + <em>c</em><sub>2</sub><em>X</em><sub>2</sub> + ⋯ + <em>c</em><sub><em>n</em></sub><em>X</em><sub><em>n</em></sub></span> <strong>será uma variável aleatória normal</strong>, com <span class="math inline"><em>E</em>(<em>Y</em>)</span> e <span class="math inline"><em>V</em>(<em>Y</em>)</span> definidos conforme</p>
+<p><br /><span class="math display"><em>E</em>(<em>Y</em>)=<em>c</em><sub>1</sub><em>μ</em><sub>1</sub> + <em>c</em><sub>2</sub><em>μ</em><sub>2</sub> + ⋯ + <em>c</em><sub><em>n</em></sub><em>μ</em><sub><em>n</em></sub></span><br /></p>
+<p><br /><span class="math display"><em>V</em>(<em>Y</em>)=<em>c</em><sub>1</sub><sup>2</sup><em>σ</em><sub>1</sub><sup>2</sup> + <em>c</em><sub>2</sub><sup>2</sup><em>σ</em><sub>2</sub><sup>2</sup> + ⋯ + <em>c</em><sub><em>n</em></sub><sup>2</sup><em>σ</em><sub><em>n</em></sub><sup>2</sup></span><br /></p>

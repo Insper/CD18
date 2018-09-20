@@ -119,13 +119,11 @@ Consequentemente, o desvio padrão do produto final é: $9.747 nm$
 
 ### Exemplo
 
-Um gerente quer melhorar o desempenho de sua fábrica. Para isso, ele quer comparar:
+Um processo industrial pode ser executado em duas etapas independentes. O tempo gasto em cada etapa segue uma distribuição com média de 5 horas e desvio-padrão de 10 horas. 
 
-Uma máquina que leva um tempo médio para concluir um processo de E(X) e tem variância V(X) versus
-duas máquinas independentes que têm tempo médio e variância iguais à metade de E(X) e V(X). 
+Um engenheiro resolveu modificar o processo de produção fazendo com que seja executado numa única fase, cujo tempo de execução é o dobro da primeira etapa do processo atual.
 
-É vantagem para ele realizar esta troca?
-
+Vale a pena adotar o processo proposto pelo engenheiro?
 
 ### Média e variância de uma média
 
